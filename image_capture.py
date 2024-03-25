@@ -1,16 +1,14 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import selenium.common.exceptions as sce
 
 import time
 import getpass
 import selenium
+import numpy as np
 
 """
 Exception if web driver cannot navigate to a default link on initial startup.
-
-Parameters:
-home_link (str) - Link of website that the driver attempted to load.
-message (str)
 """
 class NoDriverFunctionality(Exception):
     def __init__(self, home_link, message=None):
@@ -36,14 +34,6 @@ class Browser():
 
     """
     Attempts button clicks repeatedly until maximum attempts reached (i.e., throw exception).
-
-    Parameters:
-    xpath (str) - Path of XPATH element on the website.
-    driver (selenium.webdriver) - A webdriver object.
-    attempts (int) - Maximum number of attempts to click button.
-
-    Returns:
-    None
     """
     def click_button(self, xpath, driver, attempts=20):
         i = 0
@@ -60,15 +50,6 @@ class Browser():
             
     """
     Attempts to fill out a form element until maximum attempts reached (i.e., throw exception).
-
-    Parameters:
-    xpath (str) - Path of XPATH element on the website.
-    driver (selenium.webdriver) - A webdriver object.
-    text (str) - The text to fill in.
-    attempts (int) - Maximum number of attempts to click button.
-
-    Returns:
-    None
     """
     def fill_form(self, xpath, driver, text, attempts=20):
         i = 0
@@ -82,17 +63,25 @@ class Browser():
                 time.sleep(0.5)
         if i == attempts: # Last chance!
             field.send_keys(text)
+
+    """
+    Check if a web element exists.
+    Returns: True or False
+    """
+    def check_element_exists(self, xpath, driver):
+        try:
+            driver.find_element(By.XPATH, xpath)
+        except sce.NoSuchElementException:
+            return False
+        except Exception as e:
+            raise e
+        else:
+            return True
     """
     Start browsing GeoGuessr.
-
-    Parameters:
-    country (str) - Name of country to explore.
-    browser (str) - Type of browser
-
-    Returns:
-    None
     """
-    def browser(self, browser, country):
+    # settings functionality is not implemented yet
+    def browser(self, country, settings):
         home_link = "https://www.google.com"
         country = country.lower()
         geoguessr_link = f"https://www.geoguessr.com/maps/{country}/play"
@@ -114,21 +103,42 @@ class Browser():
         # Navigate to desired map.
         driver.get(geoguessr_link)
 
+        # Accept cookies
         cookies_xpath = "/html/body/div[2]/div[2]/div/div/div[2]/div/div/button"
         self.click_button(xpath=cookies_xpath, driver=driver)
 
+        # Click login button
         login_xpath = "/html/body/div[1]/div/div[2]/div[1]/div[2]/header/div[2]/div[2]/a"
         self.click_button(xpath=login_xpath, driver=driver)
 
-        
+        # Enter GG username
         username_field = "/html/body/div[1]/div/div[2]/div[1]/main/div/div/form/div/div[1]/div[2]/input"
         self.fill_form(username_field, driver, self.username)
         
+        # Enter GG password
         password_field = "/html/body/div[1]/div/div[2]/div[1]/main/div/div/form/div/div[2]/div[2]/input"
         self.fill_form(password_field, driver, self.password)
 
+        # Submit form
         userpass_xpath = "/html/body/div[1]/div/div[2]/div[1]/main/div/div/form/div/div[3]/div[1]/div/button"
         self.click_button(userpass_xpath, driver)
+        
+        # Game settings
+        # Make sure settings are default
+        move_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[2]/label[1]/div[3]/input"
+        pan_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[2]/label[2]/div[3]/input"
+        zoom_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[2]/label[3]/div[3]/input"
+        time_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[1]/div/label/div[2]/div/div/div[2]"
+        default_settings_button = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[1]/div[2]/input"
+
+        # For now, just set the settings to default
+        if self.check_element_exists(move_setting, driver):
+            assert self.check_element_exists(pan_setting, driver) and self.check_element_exists(zoom_setting, driver)
+            assert self.check_element_exists(time_setting, driver)
+            self.click_button(default_settings_button, driver)
+        
+        start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
+        self.click_button(start_game, driver)
 
         while True:
             time.sleep(10000)
@@ -177,4 +187,11 @@ if __name__ == "__main__":
     # yo aidan please change the get_credentials parameters below or it will not work :)
     username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
     data_acq = Browser(username, password)
-    data_acq.browser("chrome", "andorra")
+    game_settings = {
+        "default": False,
+        "time": np.inf,
+        "move": True,
+        "pan": True,
+        "zoom": True
+    }
+    data_acq.browser("andorra", game_settings)
