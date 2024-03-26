@@ -89,6 +89,15 @@ class Browser():
         else:
             return True
     """
+    Delete an element by its XPATH.
+    """
+    def delete_element(self, xpath):
+        time.sleep(5)
+
+        element = self.driver.find_element(By.XPATH, xpath)
+        self.driver.execute_script("arguments[0].parentNode.removeChild(arguments[0]);", element)
+
+    """
     Start browsing GeoGuessr.
     """
     # settings functionality is not implemented yet
@@ -136,10 +145,20 @@ class Browser():
         
         start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
         self.click_button(start_game)
+        
+        
+        
+        move_arrows = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[1]/div/div/div/div/div[2]/div[1]/div[10]/svg"
+        self.delete_element(move_arrows)
 
         while True:
             time.sleep(10000)
             print("i'm still here!")
+    
+    def play_game(self):
+        move_arrows = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[1]/div/div/div/div/div[2]/div[1]/div[10]/svg"
+        self.delete_element(move_arrows)
+        
 
 """
 Grabs user's credentials to log into website.
@@ -192,3 +211,4 @@ if __name__ == "__main__":
         "zoom": True
     }
     data_acq.start_game("andorra", game_settings)
+    data_acq.play_game()
