@@ -19,7 +19,6 @@ class NoDriverFunctionality(Exception):
 
         super().__init__(self.message)
 
-
 """
 A class that initializes a webdriver (browser) instance.
 
@@ -28,18 +27,30 @@ username (str) - The user's GeoGuessr username.
 password (str) - The user's GeoGuessr password.
 """
 class Browser():
-    def __init__(self, username, password):
+    def __init__(self, username, password, home_link="https://www.google.com"):
         self.username = username
         self.password = password
+        self.home_link = home_link
+        # Open an instance of Chrome and navigate to google.com.  Throw an error if not initialized.
+        try:
+            self.driver = webdriver.Chrome()
+            self.driver.get(home_link)
+
+            if self.driver.title:
+                print(f"Web driver initialized and navigated to home: {home_link}.")
+            else:
+                raise NoDriverFunctionality(home_link) 
+        except Exception as e:
+            raise e
 
     """
     Attempts button clicks repeatedly until maximum attempts reached (i.e., throw exception).
     """
-    def click_button(self, xpath, driver, attempts=20):
+    def click_button(self, xpath, attempts=20):
         i = 0
         while i < attempts:
             try:
-                button = driver.find_element(By.XPATH, xpath)
+                button = self.driver.find_element(By.XPATH, xpath)
                 button.click()
                 break
             except:
@@ -51,11 +62,11 @@ class Browser():
     """
     Attempts to fill out a form element until maximum attempts reached (i.e., throw exception).
     """
-    def fill_form(self, xpath, driver, text, attempts=20):
+    def fill_form(self, xpath, text, attempts=20):
         i = 0
         while i < attempts:
             try:
-                field = driver.find_element(By.XPATH, xpath)
+                field = self.driver.find_element(By.XPATH, xpath)
                 field.send_keys(text)
                 break
             except:
@@ -68,9 +79,9 @@ class Browser():
     Check if a web element exists.
     Returns: True or False
     """
-    def check_element_exists(self, xpath, driver):
+    def check_element_exists(self, xpath):
         try:
-            driver.find_element(By.XPATH, xpath)
+            self.driver.find_element(By.XPATH, xpath)
         except sce.NoSuchElementException:
             return False
         except Exception as e:
@@ -81,47 +92,33 @@ class Browser():
     Start browsing GeoGuessr.
     """
     # settings functionality is not implemented yet
-    def browser(self, country, settings):
+    def start_game(self, country, settings):
         home_link = "https://www.google.com"
         country = country.lower()
         geoguessr_link = f"https://www.geoguessr.com/maps/{country}/play"
 
-
-        # Open an instance of Chrome and navigate to google.com.  Throw an error if not initialized.
-        try:
-            driver = webdriver.Chrome()
-            print(type(driver))
-            driver.get(home_link)
-
-            if driver.title:
-                print(f"Web driver initialized and navigated to home: {home_link}.")
-            else:
-                raise NoDriverFunctionality(home_link) 
-        except Exception as e:
-            raise e
-        
         # Navigate to desired map.
-        driver.get(geoguessr_link)
+        self.driver.get(geoguessr_link)
 
         # Accept cookies
         cookies_xpath = "/html/body/div[2]/div[2]/div/div/div[2]/div/div/button"
-        self.click_button(xpath=cookies_xpath, driver=driver)
+        self.click_button(xpath=cookies_xpath)
 
         # Click login button
         login_xpath = "/html/body/div[1]/div/div[2]/div[1]/div[2]/header/div[2]/div[2]/a"
-        self.click_button(xpath=login_xpath, driver=driver)
+        self.click_button(xpath=login_xpath)
 
         # Enter GG username
         username_field = "/html/body/div[1]/div/div[2]/div[1]/main/div/div/form/div/div[1]/div[2]/input"
-        self.fill_form(username_field, driver, self.username)
+        self.fill_form(username_field, self.username)
         
         # Enter GG password
         password_field = "/html/body/div[1]/div/div[2]/div[1]/main/div/div/form/div/div[2]/div[2]/input"
-        self.fill_form(password_field, driver, self.password)
+        self.fill_form(password_field, self.password)
 
         # Submit form
         userpass_xpath = "/html/body/div[1]/div/div[2]/div[1]/main/div/div/form/div/div[3]/div[1]/div/button"
-        self.click_button(userpass_xpath, driver)
+        self.click_button(userpass_xpath)
         
         # Game settings
         # Make sure settings are default
@@ -132,13 +129,13 @@ class Browser():
         default_settings_button = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[1]/div[2]/input"
 
         # For now, just set the settings to default
-        if self.check_element_exists(move_setting, driver):
-            assert self.check_element_exists(pan_setting, driver) and self.check_element_exists(zoom_setting, driver)
-            assert self.check_element_exists(time_setting, driver)
-            self.click_button(default_settings_button, driver)
+        if self.check_element_exists(move_setting):
+            assert self.check_element_exists(pan_setting) and self.check_element_exists(zoom_setting)
+            assert self.check_element_exists(time_setting)
+            self.click_button(default_settings_button)
         
         start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
-        self.click_button(start_game, driver)
+        self.click_button(start_game)
 
         while True:
             time.sleep(10000)
@@ -194,4 +191,4 @@ if __name__ == "__main__":
         "pan": True,
         "zoom": True
     }
-    data_acq.browser("andorra", game_settings)
+    data_acq.start_game("andorra", game_settings)
