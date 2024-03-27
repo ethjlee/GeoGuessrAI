@@ -55,7 +55,7 @@ class Browser():
                 break
             except:
                 i += 1
-                time.sleep(0.5)
+                time.sleep(1)
         if i == attempts: # Last chance!
             button.click()
             
@@ -71,7 +71,7 @@ class Browser():
                 break
             except:
                 i += 1
-                time.sleep(0.5)
+                time.sleep(1)
         if i == attempts: # Last chance!
             field.send_keys(text)
 
@@ -145,19 +145,13 @@ class Browser():
         
         start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
         self.click_button(start_game)
-        
-        
-        
-        move_arrows = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[1]/div/div/div/div/div[2]/div[1]/div[10]/svg"
-        self.delete_element(move_arrows)
 
+        time.sleep(2)
+        self.driver.execute_script("document.getElementsByClassName('SLHIdE-sv-links-control')[0].style.display = 'none';")
+ 
         while True:
             time.sleep(10000)
             print("i'm still here!")
-    
-    def play_game(self):
-        move_arrows = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[1]/div/div/div/div/div[2]/div[1]/div[10]/svg"
-        self.delete_element(move_arrows)
         
 
 """
@@ -211,4 +205,3 @@ if __name__ == "__main__":
         "zoom": True
     }
     data_acq.start_game("andorra", game_settings)
-    data_acq.play_game()
