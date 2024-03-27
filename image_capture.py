@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import selenium.common.exceptions as sce
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 import time
 import getpass
@@ -34,7 +36,6 @@ class Browser():
         # Open an instance of Chrome and navigate to google.com.  Throw an error if not initialized.
         try:
             self.driver = webdriver.Chrome()
-            self.driver.maximize_window()
             self.driver.get(home_link)
 
             if self.driver.title:
@@ -98,6 +99,13 @@ class Browser():
         element = self.driver.find_element(By.XPATH, xpath)
         self.driver.execute_script("arguments[0].parentNode.removeChild(arguments[0]);", element)
 
+    
+    def click_map(self, xpath):
+        time.sleep(5)
+
+        element = self.driver.find_element(By.XPATH, xpath)
+        ActionChains(self.driver).move_to_element(element).click().perform()
+        
     """
     Start browsing GeoGuessr.
     """
@@ -149,7 +157,8 @@ class Browser():
 
         time.sleep(2)
         self.driver.execute_script("document.getElementsByClassName('SLHIdE-sv-links-control')[0].style.display = 'none';")
- 
+        map_xpath = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[4]/div/div[3]/div/div/div/div[3]/div[1]/div[2]"
+        self.click_map(map_xpath)
         while True:
             time.sleep(10000)
             print("i'm still here!")
@@ -196,7 +205,7 @@ def get_credentials(os, admin_name="", admin=False):
 
 if __name__ == "__main__":
     # yo aidan please change the get_credentials parameters below or it will not work :)
-    username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
+    username, password = get_credentials(os="windows", admin_name="aidan", admin=True)
     data_acq = Browser(username, password)
     game_settings = {
         "default": False,
