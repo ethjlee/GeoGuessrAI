@@ -36,6 +36,7 @@ class Browser():
         # Open an instance of Chrome and navigate to google.com.  Throw an error if not initialized.
         try:
             self.driver = webdriver.Chrome()
+            self.driver.maximize_window()
             self.driver.get(home_link)
 
             if self.driver.title:
@@ -205,7 +206,7 @@ def get_credentials(os, admin_name="", admin=False):
 
 if __name__ == "__main__":
     # yo aidan please change the get_credentials parameters below or it will not work :)
-    username, password = get_credentials(os="windows", admin_name="aidan", admin=True)
+    username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
     data_acq = Browser(username, password)
     game_settings = {
         "default": False,
