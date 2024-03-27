@@ -34,6 +34,7 @@ class Browser():
         # Open an instance of Chrome and navigate to google.com.  Throw an error if not initialized.
         try:
             self.driver = webdriver.Chrome()
+            self.driver.maximize_window()
             self.driver.get(home_link)
 
             if self.driver.title:
