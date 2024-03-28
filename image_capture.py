@@ -1,13 +1,14 @@
+import time, getpass, selenium
+import numpy as np
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import selenium.common.exceptions as sce
 from selenium.webdriver.common.action_chains import ActionChains
 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-import time
-import getpass
-import selenium
-import numpy as np
 
 """
 Exception if web driver cannot navigate to a default link on initial startup.
@@ -92,14 +93,13 @@ class Browser():
         else:
             return True
     """
-    Delete an element by its XPATH.
+    Delete an element by its class name.
     """
-    def delete_element(self, xpath):
-        time.sleep(5)
-
-        element = self.driver.find_element(By.XPATH, xpath)
-        self.driver.execute_script("arguments[0].parentNode.removeChild(arguments[0]);", element)
-
+    def delete_element(self, class_name):
+        element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, class_name))
+        )
+        self.driver.execute_script("arguments[0].style.display = 'none';", element)
     
     def click_map(self, xpath):
         time.sleep(5)
@@ -153,13 +153,22 @@ class Browser():
             assert self.check_element_exists(time_setting)
             self.click_button(default_settings_button)
         
+        # Start the game.
         start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
         self.click_button(start_game)
 
-        time.sleep(2)
-        self.driver.execute_script("document.getElementsByClassName('SLHIdE-sv-links-control')[0].style.display = 'none';")
+        # Delete arrows
+        self.delete_element("SLHIdE-sv-links-control")
+
+        # Delete HUD
+        self.delete_element("game_status__q_b7N")
+        self.delete_element("game_controls___pIfC")
+        self.delete_element("game_topHud__tAKJD")
+
+        # Click map (enables guess button)
         map_xpath = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[4]/div/div[3]/div/div/div/div[3]/div[1]/div[2]"
         self.click_map(map_xpath)
+        
         while True:
             time.sleep(10000)
             print("i'm still here!")
