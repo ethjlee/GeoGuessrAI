@@ -5,9 +5,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import selenium.common.exceptions as sce
 from selenium.webdriver.common.action_chains import ActionChains
-
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 
 
 """
@@ -50,7 +50,13 @@ class Browser():
     """
     Attempts button clicks repeatedly until maximum attempts reached (i.e., throw exception).
     """
-    def click_button(self, xpath, attempts=20):
+    def click_button(self, xpath, timeout=10, attempts=20):
+        button = WebDriverWait(self.driver, timeout=timeout, poll_frequency=timeout/attempts).until(
+            EC.visibility_of_element_located((By.XPATH, xpath))
+        )
+        button.click()
+        
+        """
         i = 0
         while i < attempts:
             try:
@@ -62,11 +68,19 @@ class Browser():
                 time.sleep(1)
         if i == attempts: # Last chance!
             button.click()
+        """
             
     """
     Attempts to fill out a form element until maximum attempts reached (i.e., throw exception).
     """
-    def fill_form(self, xpath, text, attempts=20):
+    def fill_form(self, xpath, text, timeout=10, attempts=20):
+        field = WebDriverWait(self.driver, timeout=timeout, poll_frequency=timeout/attempts).until(
+            EC.visibility_of_element_located((By.XPATH, xpath))
+        )
+        field.send_keys(text)
+        
+        
+        """
         i = 0
         while i < attempts:
             try:
@@ -78,6 +92,7 @@ class Browser():
                 time.sleep(1)
         if i == attempts: # Last chance!
             field.send_keys(text)
+        """
 
     """
     Check if a web element exists.
@@ -101,12 +116,24 @@ class Browser():
         )
         self.driver.execute_script("arguments[0].style.display = 'none';", element)
     
+    """
+    Simulate a map guess.
+    """
     def click_map(self, xpath):
-        time.sleep(5)
-
-        element = self.driver.find_element(By.XPATH, xpath)
+        element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, xpath))
+        )
         ActionChains(self.driver).move_to_element(element).click().perform()
-        
+    
+    """
+    Simulate a key press.
+    """
+    def press_key(self, key):
+        time.sleep(0.5)
+        action = ActionChains(self.driver)
+        action.send_keys(key)
+        action.perform()
+
     """
     Start browsing GeoGuessr.
     """
@@ -169,6 +196,9 @@ class Browser():
         map_xpath = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[4]/div/div[3]/div/div/div/div[3]/div[1]/div[2]"
         self.click_map(map_xpath)
         
+        # Press space bar.
+        self.press_key(Keys.SPACE)
+
         while True:
             time.sleep(10000)
             print("i'm still here!")
