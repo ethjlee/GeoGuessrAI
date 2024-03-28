@@ -184,6 +184,12 @@ class Browser():
         start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
         self.click_button(start_game)
 
+        """
+        while True:
+            time.sleep(10000)
+            print("i'm still here!")
+        """
+    def play_game(self):
         # Delete arrows
         self.delete_element("SLHIdE-sv-links-control")
 
@@ -199,9 +205,6 @@ class Browser():
         # Press space bar.
         self.press_key(Keys.SPACE)
 
-        while True:
-            time.sleep(10000)
-            print("i'm still here!")
         
 
 """
@@ -255,3 +258,10 @@ if __name__ == "__main__":
         "zoom": True
     }
     data_acq.start_game("andorra", game_settings)
+    for i in range(5):
+        data_acq.play_game()
+        data_acq.press_key(Keys.SPACE)
+    
+    while True:
+            time.sleep(10000)
+            print("i'm still here!")
