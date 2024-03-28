@@ -129,7 +129,7 @@ class Browser():
     Simulate a key press.
     """
     def press_key(self, key):
-        time.sleep(0.5)
+        time.sleep(1)
         action = ActionChains(self.driver)
         action.send_keys(key)
         action.perform()
