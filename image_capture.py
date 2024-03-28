@@ -55,20 +55,6 @@ class Browser():
             EC.visibility_of_element_located((By.XPATH, xpath))
         )
         button.click()
-        
-        """
-        i = 0
-        while i < attempts:
-            try:
-                button = self.driver.find_element(By.XPATH, xpath)
-                button.click()
-                break
-            except:
-                i += 1
-                time.sleep(1)
-        if i == attempts: # Last chance!
-            button.click()
-        """
             
     """
     Attempts to fill out a form element until maximum attempts reached (i.e., throw exception).
@@ -78,21 +64,6 @@ class Browser():
             EC.visibility_of_element_located((By.XPATH, xpath))
         )
         field.send_keys(text)
-        
-        
-        """
-        i = 0
-        while i < attempts:
-            try:
-                field = self.driver.find_element(By.XPATH, xpath)
-                field.send_keys(text)
-                break
-            except:
-                i += 1
-                time.sleep(1)
-        if i == attempts: # Last chance!
-            field.send_keys(text)
-        """
 
     """
     Check if a web element exists.
@@ -189,7 +160,7 @@ class Browser():
             time.sleep(10000)
             print("i'm still here!")
         """
-    def play_game(self):
+    def play_round(self):
         # Delete arrows
         self.delete_element("SLHIdE-sv-links-control")
 
@@ -259,7 +230,7 @@ if __name__ == "__main__":
     }
     data_acq.start_game("andorra", game_settings)
     for i in range(5):
-        data_acq.play_game()
+        data_acq.play_round()
         data_acq.press_key(Keys.SPACE)
     
     while True:
