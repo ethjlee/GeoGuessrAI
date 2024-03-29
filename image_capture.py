@@ -1,4 +1,4 @@
-import time, getpass, selenium
+import time, getpass, selenium, os
 import numpy as np
 from datetime import datetime
 
@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from PIL import Image
 
 
 
@@ -45,7 +46,6 @@ class Browser():
             self.driver = webdriver.Chrome(options=self.chrome_options)
             self.driver.maximize_window()
             self.driver.get(home_link)
-
             if self.driver.title:
                 print(f"Web driver initialized and navigated to home: {home_link}.")
             else:
@@ -205,6 +205,8 @@ class Browser():
             self.delete_element("game_controls___pIfC")
             # Delete top HUD
             self.delete_element("game_topHud__tAKJD")
+            
+            # Play 5 rounds
             for _ in range(5):
                 self.play_round(country)
                 self.press_key(Keys.SPACE)
@@ -224,9 +226,18 @@ class Browser():
         self.delete_element("game_guessMap__MTlQ_")
         time.sleep(1) # Ensure picture load
         # Save screenshot
-        if "/" in self.save_path:
-            timestamp = datetime.now().strftime("%m.%d.%Y_%H%M%S")
-            screenshot_path = f"{self.save_path}/{country}/{timestamp}_{country}.png"
+        timestamp = datetime.now().strftime("%m.%d.%Y_%H%M%S")
+        if "/" in self.save_path: # mac/linux
+            screenshot_path = f"{self.save_path}/{country}"
+            if not os.path.exists(screenshot_path):
+                os.makedirs(screenshot_path)
+            screenshot_path = f"{screenshot_path}/{timestamp}_{country}.png"
+            self.driver.save_screenshot(screenshot_path)
+        elif "\\" in self.save_path: # windows
+            screenshot_path = f"{self.save_path}\\{country}"
+            if not os.path.exists(screenshot_path):
+                os.makedirs(screenshot_path)
+            screenshot_path = f"{screenshot_path}\\{timestamp}_{country}.png"
             self.driver.save_screenshot(screenshot_path)
 
         self.restore_element("game_guessMap__MTlQ_") # Restore map visibility for the next round.
@@ -278,9 +289,9 @@ def get_credentials(os, admin_name="", admin=False):
         
 
 if __name__ == "__main__":
-    # yo aidan please change the get_credentials parameters below or it will not work :)
+    # path to GG credentials is located in default "home folder/admin_name"
     username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
-    # change save path to PARENT folder (sub-dirs created for ea. country)
+    # change save path to PARENT GG folder (sub-dirs created for ea. country)
     data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
     game_settings = {
         "default": False,
