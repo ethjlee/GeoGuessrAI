@@ -1,3 +1,0 @@
-import geopy
-
-# Test demo
