@@ -134,7 +134,6 @@ class Browser():
     Simulate a key press.
     """
     def press_key(self, key):
-        time.sleep(1)
         action = ActionChains(self.driver)
         action.send_keys(key)
         action.perform()
@@ -209,6 +208,9 @@ class Browser():
             # Play 5 rounds
             for _ in range(5):
                 self.play_round(country)
+                WebDriverWait(self.driver, timeout=10).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, "round-result_wrapper__V1VCe"))
+                )
                 self.press_key(Keys.SPACE)
                 progress_bar.update(1)
 
@@ -227,7 +229,7 @@ class Browser():
     def play_round(self, country):
         # Delete map.
         self.delete_element("game_guessMap__MTlQ_")
-        time.sleep(1) # Ensure picture load
+        time.sleep(2) # Ensure picture load
         # Save screenshot
         timestamp = datetime.now().strftime("%m.%d.%Y_%H%M%S")
         if "/" in self.save_path: # mac/linux
@@ -247,7 +249,9 @@ class Browser():
         # Click map.
         map_xpath = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[4]/div/div[3]/div/div/div/div[3]/div[1]/div[2]"
         self.click_map(map_xpath)
-        
+        WebDriverWait(self.driver, timeout=10).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "button_variantPrimary__xc8Hp"))
+        )
         # Submit the guess.
         self.press_key(Keys.SPACE)
 
@@ -297,4 +301,4 @@ if __name__ == "__main__":
     # change save path to PARENT GG folder (sub-dirs created for ea. country)
     data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
 
-    data_acq.start_game(country="andorra", num_images=5)
+    data_acq.start_game(country="andorra", num_images=8400)
