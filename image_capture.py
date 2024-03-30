@@ -297,4 +297,4 @@ if __name__ == "__main__":
     # change save path to PARENT GG folder (sub-dirs created for ea. country)
     data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
 
-    data_acq.start_game(country="andorra", num_images=10)
+    data_acq.start_game(country="andorra", num_images=5)

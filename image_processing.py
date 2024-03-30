@@ -5,7 +5,7 @@ import os
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
     image_names = [name for name in image_names if ".png" in name]
-    for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress:"):
+    for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress"):
         name = image_names[i]
         image = Image.open(f"{path}/{name}")
         rgb_image = image.convert('RGB')
