@@ -1,6 +1,7 @@
 import time, getpass, selenium, os
 import numpy as np
 from datetime import datetime
+from tqdm import tqdm
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,7 +11,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
-from PIL import Image
 
 
 
@@ -152,8 +152,7 @@ class Browser():
     """
     Start browsing GeoGuessr.
     """
-    # settings functionality is not implemented yet
-    def start_game(self, country, num_games, settings={}):
+    def start_game(self, country, num_images):
         country = country.lower()
         geoguessr_link = f"https://www.geoguessr.com/maps/{country}/play"
 
@@ -185,7 +184,6 @@ class Browser():
         move_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[2]/label[1]/div[3]/input"
         pan_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[2]/label[2]/div[3]/input"
         zoom_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[2]/label[3]/div[3]/input"
-        #time_setting = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div[2]/div/div[1]/div/label/div[2]/div/div/div[2]"
         default_settings_button = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[5]/div/div/div[2]/input"
 
         # Enable NMPZ with time limits (we remove timer later)
@@ -198,7 +196,9 @@ class Browser():
         # Start the game.
         start_game = "/html/body/div[1]/div[2]/div[2]/div[1]/main/div/div/div/div/div[3]/div/div/button"
         self.click_button_by_xpath(start_game)
-        for i in range(num_games):
+
+        progress_bar = tqdm(total=num_images, desc="Image capture progress")
+        for i in range(int(num_images/5)):
             # Delete game status (top right)
             self.delete_element("game_status__q_b7N")
             # Delete game controls (bottom left)
@@ -210,12 +210,15 @@ class Browser():
             for _ in range(5):
                 self.play_round(country)
                 self.press_key(Keys.SPACE)
+                progress_bar.update(1)
 
             WebDriverWait(self.driver, timeout=10).until(
                 EC.visibility_of_element_located((By.XPATH, 
                                                   "/html/body/div[1]/div[2]/div[2]/main/div[2]/div/div[2]/div/div[2]/div[3]/div/div/button")))
             self.press_key(Keys.SPACE)
         
+        
+        progress_bar.close()
         print("Finished.")
     
     """
@@ -293,15 +296,5 @@ if __name__ == "__main__":
     username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
     # change save path to PARENT GG folder (sub-dirs created for ea. country)
     data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
-    game_settings = {
-        "default": False,
-        "time": np.inf,
-        "move": True,
-        "pan": True,
-        "zoom": True
-    }
-    data_acq.start_game("andorra", 3, game_settings)
-    
-    while True:
-            time.sleep(10000)
-            print("i'm still here!")
+
+    data_acq.start_game(country="andorra", num_images=10)
