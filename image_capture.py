@@ -47,7 +47,8 @@ class Browser():
             self.driver.maximize_window()
             self.driver.get(home_link)
             if self.driver.title:
-                print(f"Web driver initialized and navigated to home: {home_link}.")
+                #print(f"Web driver initialized and navigated to home: {home_link}.")
+                pass
             else:
                 raise NoDriverFunctionality(home_link) 
         except Exception as e:
@@ -299,6 +300,7 @@ if __name__ == "__main__":
     # path to GG credentials is located in default "home folder/admin_name"
     username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
     # change save path to PARENT GG folder (sub-dirs created for ea. country)
-    data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
-
-    data_acq.start_game(country="andorra", num_images=8400)
+    for i in tqdm(range(3), desc="Total batch progress", miniters=0):
+        data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
+        data_acq.start_game(country="andorra", num_images=1000)
+        data_acq.driver.close()
