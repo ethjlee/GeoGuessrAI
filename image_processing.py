@@ -18,22 +18,27 @@ def get_folder_size(folder_path):
     total_size = 0
     png_size = 0
     jpg_size = 0
-    
-    # Walk through all files and subdirectories in the folder
-    for dirpath, _, filenames in os.walk(folder_path):
-        # Add the size of each file to the total size
-        png_files = [fn for fn in filenames if ".png" in fn]
-        jpg_files = [gn for gn in filenames if ".jpg" in gn]
-        for pf in png_files:
-            file_path = os.path.join(dirpath, pf)
+    num_pngs = 0
+    num_jpgs = 0
+    for filename in os.listdir(folder_path):
+        # Construct the full file path
+        file_path = os.path.join(folder_path, filename)
+        
+        # Check if the file is a PNG file
+        if filename.endswith('.png'):
+            # Get the size of the PNG file
             size = os.path.getsize(file_path)
             total_size += size
             png_size += size
-        for jf in jpg_files:
-            file_path = os.path.join(dirpath, jf)
+            num_pngs += 1
+        
+        # Check if the file is a JPG file
+        elif filename.endswith('.jpg'):
+            # Get the size of the JPG file
             size = os.path.getsize(file_path)
             total_size += size
             jpg_size += size
+            num_jpgs += 1
 
     # Convert the total size to gigabytes
     gb_converter = 1024**3
@@ -41,13 +46,15 @@ def get_folder_size(folder_path):
     png_size_gb = png_size / gb_converter
     jpg_size_gb = jpg_size / gb_converter
     
-    return total_size_gb, png_size_gb, jpg_size_gb
+    return total_size_gb, png_size_gb, jpg_size_gb, num_pngs, num_jpgs
 
 if __name__ == "__main__":
     # path to images
     folder = "/Users/ethan/Documents/GeoGuessrAI/andorra"
     convert_png_to_jpg(folder)
-    t, p, j = get_folder_size(folder)
+    t, p, j, np, nj = get_folder_size(folder)
     print(f"Folder size: {t} GB")
     print(f"Total size of PNGs: {p} GB")
     print(f"Total size of JPGs: {j} GB")
+    print(f"Total number of PNGs: {np}")
+    print(f"Total number of JPGs: {nj}")
