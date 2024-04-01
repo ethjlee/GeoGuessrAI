@@ -300,6 +300,11 @@ def get_credentials(os, admin_name="", admin=False):
 
     return (username, password)
         
+def capture(batches, batch_size, country, path):
+    for i in tqdm(range(batches), desc="Total batch progress", miniters=0):
+        data_acq = Browser(username, password, path)
+        data_acq.start_game(country=country, num_images=batch_size)
+        data_acq.driver.close()
 
 if __name__ == "__main__":
     # path to GG credentials is located in default "home folder/admin_name"
