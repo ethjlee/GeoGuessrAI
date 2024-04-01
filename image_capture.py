@@ -49,6 +49,8 @@ class Browser():
             if self.driver.title:
                 #print(f"Web driver initialized and navigated to home: {home_link}.")
                 pass
+                #print(f"Web driver initialized and navigated to home: {home_link}.")
+                pass
             else:
                 raise NoDriverFunctionality(home_link) 
         except Exception as e:
@@ -235,16 +237,22 @@ class Browser():
         timestamp = datetime.now().strftime("%m.%d.%Y_%H%M%S")
         if "/" in self.save_path: # mac/linux
             screenshot_path = f"{self.save_path}/{country}"
+            
             if not os.path.exists(screenshot_path):
                 os.makedirs(screenshot_path)
             screenshot_path = f"{screenshot_path}/{timestamp}_{country}.png"
             self.driver.save_screenshot(screenshot_path)
         elif "\\" in self.save_path: # windows
+            
             screenshot_path = f"{self.save_path}\\{country}"
+            print(screenshot_path)
             if not os.path.exists(screenshot_path):
                 os.makedirs(screenshot_path)
+                
+            
             screenshot_path = f"{screenshot_path}\\{timestamp}_{country}.png"
-            self.driver.save_screenshot(screenshot_path)
+            print(screenshot_path)
+            print(self.driver.save_screenshot(screenshot_path))
 
         self.restore_element("game_guessMap__MTlQ_") # Restore map visibility for the next round.
         # Click map.
