@@ -235,16 +235,22 @@ class Browser():
         timestamp = datetime.now().strftime("%m.%d.%Y_%H%M%S")
         if "/" in self.save_path: # mac/linux
             screenshot_path = f"{self.save_path}/{country}"
+            
             if not os.path.exists(screenshot_path):
                 os.makedirs(screenshot_path)
             screenshot_path = f"{screenshot_path}/{timestamp}_{country}.png"
             self.driver.save_screenshot(screenshot_path)
         elif "\\" in self.save_path: # windows
+            
             screenshot_path = f"{self.save_path}\\{country}"
+            print(screenshot_path)
             if not os.path.exists(screenshot_path):
                 os.makedirs(screenshot_path)
+                
+            
             screenshot_path = f"{screenshot_path}\\{timestamp}_{country}.png"
-            self.driver.save_screenshot(screenshot_path)
+            print(screenshot_path)
+            print(self.driver.save_screenshot(screenshot_path))
 
         self.restore_element("game_guessMap__MTlQ_") # Restore map visibility for the next round.
         # Click map.
@@ -295,12 +301,32 @@ def get_credentials(os, admin_name="", admin=False):
 
     return (username, password)
         
+def capture(batches, batch_size, country, path):
+    for i in tqdm(range(batches), desc="Total batch progress", miniters=0):
+        data_acq = Browser(username, password, path)
+        data_acq.start_game(country=country, num_images=batch_size)
+        data_acq.driver.close()
+def capture(batches, batch_size, country, path):
+    for i in tqdm(range(batches), desc="Total batch progress", miniters=0):
+        data_acq = Browser(username, password, path)
+        data_acq.start_game(country=country, num_images=batch_size)
+        data_acq.driver.close()
 
 if __name__ == "__main__":
     # path to GG credentials is located in default "home folder/admin_name"
     username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
-    # change save path to PARENT GG folder (sub-dirs created for ea. country)
-    for i in tqdm(range(3), desc="Total batch progress", miniters=0):
-        data_acq = Browser(username, password, "/Users/ethan/Documents/GeoGuessrAI")
-        data_acq.start_game(country="andorra", num_images=1000)
-        data_acq.driver.close()
+    
+    overnight = True
+    batches = 40
+    batch_size = 500
+    country = "taiwan"
+    save_path = "/Users/ethan/Documents/GeoGuessrAI" # change save path to PARENT GG folder (sub-dirs created for ea. country)
+
+    if overnight:
+        while overnight:
+            try:
+                capture(batches, batch_size, country, save_path)
+            except:
+                pass
+    else:
+        capture(batches, batch_size, country, save_path)
