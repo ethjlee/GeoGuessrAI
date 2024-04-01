@@ -32,8 +32,49 @@ def remove_black_images(folder_path):
             os.remove(image_path)
             print(f"Removed black image: {filename}")
 
+   
+def is_black(image_path, threshold=10):
+    with Image.open(image_path) as img:
+        grayscale = img.convert('L')  # Convert to grayscale
+        black_pixels = sum(1 for pixel in grayscale.getdata() if pixel <= threshold)
+        total_pixels = grayscale.size[0] * grayscale.size[1]  # Width * Height
+        ratio_black = black_pixels / total_pixels
+
+    return ratio_black > 0.95  # If 95% or more of the image is black, consider it as a black image
+
+def remove_black_images(folder_path):
+    for filename in os.listdir(folder_path):
+        image_path = os.path.join(folder_path, filename)
+        if is_black(image_path):
+            os.remove(image_path)
+            print(f"Removed black image: {filename}")
+
 def get_folder_size(folder_path):
     total_size = 0
+    png_size = 0
+    jpg_size = 0
+    num_pngs = 0
+    num_jpgs = 0
+    for filename in os.listdir(folder_path):
+        # Construct the full file path
+        file_path = os.path.join(folder_path, filename)
+        
+        # Check if the file is a PNG file
+        if filename.endswith('.png'):
+            # Get the size of the PNG file
+            size = os.path.getsize(file_path)
+            total_size += size
+            png_size += size
+            num_pngs += 1
+        
+        # Check if the file is a JPG file
+        elif filename.endswith('.jpg'):
+            # Get the size of the JPG file
+            size = os.path.getsize(file_path)
+            total_size += size
+            jpg_size += size
+            num_jpgs += 1
+
     png_size = 0
     jpg_size = 0
     num_pngs = 0

@@ -1,7 +1,7 @@
 #!bin/bash
 
-parent_folder="/Users/aidan/Documents/GeoGuessrAI"
-country="andorra"
+parent_folder="/Users/ethan/Documents/GeoGuessrAI"
+country="taiwan"
 
 source_folder="${parent_folder}/${country}"
 echo "From: $source_folder"
