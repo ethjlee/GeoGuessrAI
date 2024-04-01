@@ -6,6 +6,7 @@ def convert_png_to_jpg(path):
     image_names = os.listdir(path)
     image_names = [name for name in image_names if ".png" in name]
     image_names = [name for name in image_names if not name.split(".png")[0]+".jpg" in os.listdir(path)]
+    image_names = [name for name in image_names if not name.split(".png")[0]+".jpg" in os.listdir(path)]
     for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress"):
         name = image_names[i]
         image = Image.open(f"{path}/{name}")
