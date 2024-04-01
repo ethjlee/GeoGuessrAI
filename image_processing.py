@@ -86,12 +86,7 @@ def get_folder_size(folder_path):
     total_size_gb = total_size / gb_converter
     png_size_gb = png_size / gb_converter
     jpg_size_gb = jpg_size / gb_converter
-    gb_converter = 1024**3
-    total_size_gb = total_size / gb_converter
-    png_size_gb = png_size / gb_converter
-    jpg_size_gb = jpg_size / gb_converter
     
-    return total_size_gb, png_size_gb, jpg_size_gb, num_pngs, num_jpgs
     return total_size_gb, png_size_gb, jpg_size_gb, num_pngs, num_jpgs
 
 if __name__ == "__main__":
