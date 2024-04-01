@@ -14,6 +14,23 @@ def convert_png_to_jpg(path):
     
 def resize():
     pass
+   
+def is_black(image_path, threshold=10):
+    with Image.open(image_path) as img:
+        grayscale = img.convert('L')  # Convert to grayscale
+        black_pixels = sum(1 for pixel in grayscale.getdata() if pixel <= threshold)
+        total_pixels = grayscale.size[0] * grayscale.size[1]  # Width * Height
+        ratio_black = black_pixels / total_pixels
+
+    return ratio_black > 0.95  # If 95% or more of the image is black, consider it as a black image
+
+def remove_black_images(folder_path):
+    for filename in os.listdir(folder_path):
+        image_path = os.path.join(folder_path, filename)
+        if is_black(image_path):
+            os.remove(image_path)
+            print(f"Removed black image: {filename}")
+
 def get_folder_size(folder_path):
     total_size = 0
     png_size = 0
@@ -50,7 +67,7 @@ def get_folder_size(folder_path):
 
 if __name__ == "__main__":
     # path to images
-    folder = "/Users/ethan/Documents/GeoGuessrAI/andorra"
+    folder = "C:\\Users\\aidan\\Documents\\GeoGuessrAI\\andorra"
     convert_png_to_jpg(folder)
     t, p, j, np, nj = get_folder_size(folder)
     print(f"Folder size: {t} GB")
@@ -58,3 +75,4 @@ if __name__ == "__main__":
     print(f"Total size of JPGs: {j} GB")
     print(f"Total number of PNGs: {np}")
     print(f"Total number of JPGs: {nj}")
+    remove_black_images(folder)

@@ -1,6 +1,6 @@
 #!bin/bash
 
-parent_folder="/Users/ethan/Documents/GeoGuessrAI"
+parent_folder="/Users/aidan/Documents/GeoGuessrAI"
 country="andorra"
 
 source_folder="${parent_folder}/${country}"
