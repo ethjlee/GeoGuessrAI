@@ -43,42 +43,21 @@ def is_black(image_path, threshold=10):
     return ratio_black > 0.95  # If 95% or more of the image is black, consider it as a black image
 
 def remove_black_images(folder_path):
-    for filename in os.listdir(folder_path):
+    i = 0
+    directory = [i for i in os.listdir(folder_path) if ".jpg" in i]
+    for filename in tqdm(directory, desc="Removing bad images", unit="pics"):
         image_path = os.path.join(folder_path, filename)
         if is_black(image_path):
             os.remove(image_path)
             print(f"Removed black image: {filename}")
-
+            i += 1
+    print(f"Removed {i} bad images.")
 def get_folder_size(folder_path):
+    png_size = 0
+    jpg_size = 0
+    num_pngs = 0
+    num_jpgs = 0
     total_size = 0
-    png_size = 0
-    jpg_size = 0
-    num_pngs = 0
-    num_jpgs = 0
-    for filename in os.listdir(folder_path):
-        # Construct the full file path
-        file_path = os.path.join(folder_path, filename)
-        
-        # Check if the file is a PNG file
-        if filename.endswith('.png'):
-            # Get the size of the PNG file
-            size = os.path.getsize(file_path)
-            total_size += size
-            png_size += size
-            num_pngs += 1
-        
-        # Check if the file is a JPG file
-        elif filename.endswith('.jpg'):
-            # Get the size of the JPG file
-            size = os.path.getsize(file_path)
-            total_size += size
-            jpg_size += size
-            num_jpgs += 1
-
-    png_size = 0
-    jpg_size = 0
-    num_pngs = 0
-    num_jpgs = 0
     for filename in os.listdir(folder_path):
         # Construct the full file path
         file_path = os.path.join(folder_path, filename)
@@ -109,7 +88,7 @@ def get_folder_size(folder_path):
 
 if __name__ == "__main__":
     # path to images
-    folder = "C:\\Users\\aidan\\Documents\\GeoGuessrAI\\andorra"
+    folder = "/Users/ethan/Documents/GeoGuessrAI/andorra"
     convert_png_to_jpg(folder)
     t, p, j, np, nj = get_folder_size(folder)
     print(f"Folder size: {t} GB")
