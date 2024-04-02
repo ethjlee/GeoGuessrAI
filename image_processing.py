@@ -12,7 +12,7 @@ def convert_png_to_jpg(path):
         separator = "/" if "/" in path else "\\"                
         image = Image.open(f"{path}{separator}{name}")
         rgb_image = image.convert('RGB')
-        rgb_image.save(path+{separator}+name.split(".png")[0]+".jpg")
+        rgb_image.save(path+separator+name.split(".png")[0]+".jpg")
     
 def resize():
     pass
