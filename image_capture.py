@@ -298,12 +298,6 @@ def get_credentials(os, admin_name="", admin=False):
         password = getpass.getpass("Enter your GeoGuessr password: ")
 
     return (username, password)
-        
-def capture(batches, batch_size, country, path):
-    for i in tqdm(range(batches), desc="Total batch progress", miniters=0):
-        data_acq = Browser(username, password, path)
-        data_acq.start_game(country=country, num_images=batch_size)
-        data_acq.driver.close()
 
 if __name__ == "__main__":
     # path to GG credentials is located in default "home folder/admin_name"
@@ -312,15 +306,22 @@ if __name__ == "__main__":
     overnight = True
     batches = 40
     batch_size = 500
-    country = "taiwan"
+    country = "south-korea"
     # The parent GG path. Sub-dirs are automatically created for ea. country.
     save_path = "/Users/ethan/Documents/GeoGuessrAI" 
 
     if overnight:
         while overnight:
             try:
-                capture(batches, batch_size, country, save_path)
+                for i in tqdm(range(batches), desc="Total batch progress", miniters=0):
+                    data_acq = Browser(username, password, save_path)
+                    data_acq.start_game(country=country, num_images=batch_size)
             except:
                 pass
+            finally:
+                data_acq.driver.quit()
     else:
-        capture(batches, batch_size, country, save_path)
+        for i in tqdm(range(batches), desc="Total batch progress", miniters=0):
+            data_acq = Browser(username, password, save_path)
+            data_acq.start_game(country=country, num_images=batch_size)
+            data_acq.driver.quit()
