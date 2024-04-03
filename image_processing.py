@@ -1,6 +1,6 @@
 from PIL import Image
 from tqdm import tqdm
-import os
+import os, shutil
 
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
@@ -53,6 +53,7 @@ def remove_black_images(folder_path):
             print(f"Removed black image: {filename}")
             i += 1
     print(f"Removed {i} bad images.")
+
 def get_folder_size(folder_path):
     png_size = 0
     jpg_size = 0
@@ -87,14 +88,40 @@ def get_folder_size(folder_path):
     
     return total_size_gb, png_size_gb, jpg_size_gb, num_pngs, num_jpgs
 
+def move_pngs(folder_to_photos):
+    # Move pngs to a separate directory.
+    source_folder = folder_to_photos # ./GGAI/country
+    parent_folder = os.path.dirname(source_folder) # ./GGAI
+    separator = "/" if "/" in source_folder else "\\"
+    country = source_folder.split(separator)[-1] # /country
+    
+    # Assign source -> destination folders
+    print("From:", source_folder)
+    destination_folder = os.path.join(parent_folder, f"{country}_pngs")
+    print("To:", destination_folder)
+
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+
+    i = 0
+    for root, _, files in os.walk(source_folder):
+        files = [f for f in files if f.endswith(".png")]
+        for file in tqdm(files, desc="Moving PNGs out", unit="pngs"):
+            source_file_path = os.path.join(root, file)
+            destination_file_path = os.path.join(destination_folder, file)
+            os.makedirs(destination_folder, exist_ok=True)
+            shutil.move(source_file_path, destination_file_path)
+            i += 1
+    print(f"Moved {i} PNGs from {parent_folder} to {destination_folder}.")
 if __name__ == "__main__":
     # path to images
-    folder = "/Users/ethan/Documents/GeoGuessrAI/andorra"
-    convert_png_to_jpg(folder)
-    t, p, j, np, nj = get_folder_size(folder)
+    path_to_images = "/Users/ethan/Documents/GeoGuessrAI/taiwan"
+    convert_png_to_jpg(path_to_images)
+    t, p, j, np, nj = get_folder_size(path_to_images)
     print(f"Folder size: {t} GB")
     print(f"Total size of PNGs: {p} GB")
     print(f"Total size of JPGs: {j} GB")
     print(f"Total number of PNGs: {np}")
     print(f"Total number of JPGs: {nj}")
-    remove_black_images(folder)
+    move_pngs(path_to_images)
+    remove_black_images(path_to_images)
