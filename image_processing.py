@@ -5,8 +5,6 @@ import os, shutil
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
     image_names = [name for name in image_names if ".png" in name]
-    image_names = [name for name in image_names if not name.split(".png")[0]+".jpg" in os.listdir(path)]
-    image_names = [name for name in image_names if not name.split(".png")[0]+".jpg" in os.listdir(path)]
     for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress"):
         name = image_names[i]
         separator = "/" if "/" in path else "\\"                
@@ -113,9 +111,10 @@ def move_pngs(folder_to_photos):
             shutil.move(source_file_path, destination_file_path)
             i += 1
     print(f"Moved {i} PNGs from {parent_folder} to {destination_folder}.")
+
 if __name__ == "__main__":
     # path to images
-    path_to_images = "/Users/ethan/Documents/GeoGuessrAI/taiwan"
+    path_to_images = "/Users/ethan/Documents/GeoGuessrAI/south-korea"
     convert_png_to_jpg(path_to_images)
     t, p, j, np, nj = get_folder_size(path_to_images)
     print(f"Folder size: {t} GB")
