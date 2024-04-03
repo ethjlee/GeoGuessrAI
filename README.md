@@ -3,8 +3,11 @@
 
 Implement machine learning algorithm to classify various Google Street View images from around the world.
 
-~~Main API calls go to Nominatim, part of Open Street Map.~~
+## Countries
+- Andorra
+- Taiwan
 
+## Progress
 ### Data Acquisition
 
 - [x] Launch browser
