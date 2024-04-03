@@ -7,6 +7,7 @@ Implement machine learning algorithm to classify various Google Street View imag
 - Andorra
 - Taiwan
 - South Korea
+- Malta
 
 ## Progress
 ### Data Acquisition
