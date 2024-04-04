@@ -1,6 +1,6 @@
 from PIL import Image
 from tqdm import tqdm
-import os, shutil
+import os, shutil, sys
 
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
@@ -12,26 +12,36 @@ def convert_png_to_jpg(path):
         rgb_image = image.convert('RGB')
         rgb_image.save(path+separator+name.split(".png")[0]+".jpg")
     
-def resize():
-    pass
-   
-def is_black(image_path, threshold=10):
-    with Image.open(image_path) as img:
-        grayscale = img.convert('L')  # Convert to grayscale
-        black_pixels = sum(1 for pixel in grayscale.getdata() if pixel <= threshold)
-        total_pixels = grayscale.size[0] * grayscale.size[1]  # Width * Height
-        ratio_black = black_pixels / total_pixels
-
-    return ratio_black > 0.95  # If 95% or more of the image is black, consider it as a black image
-
-def remove_black_images(folder_path):
+def resize(folder_path, output_path, width, height):
+    source_folder = folder_path # ./GGAI/country
+    parent_folder = os.path.dirname(source_folder) # ./GGAI
+    separator = "/" if "/" in source_folder else "\\"
+    country = source_folder.split(separator)[-1] # /country
+    folder_path = os.path.join(parent_folder, f"{country}_pngs")
+    if not os.path.exists(output_path): 
+        os.makedirs(output_path)
+    
+    
     for filename in os.listdir(folder_path):
-        image_path = os.path.join(folder_path, filename)
-        if is_black(image_path):
-            os.remove(image_path)
-            print(f"Removed black image: {filename}")
+        if filename.endswith(".jpg") or filename.endswith(".png"):
+            input_path = os.path.join(folder_path, filename)
+            image = Image.open(input_path)
+            
+            # Get current dimensions
+            img_width, img_height = image.size
+            
+            # Calculate cropping coordinates
+            left = (img_width - width) / 2
+            top = (img_height - height) / 2
+            right = left + width
+            bottom = top + height
+            
+            # Cropping image
+            cropped_image = image.crop((left, top, right, bottom))
+            output_file_path = os.path.join(output_path, filename)
+            cropped_image.save(output_file_path)
 
-   
+
 def is_black(image_path, threshold=10):
     with Image.open(image_path) as img:
         grayscale = img.convert('L')  # Convert to grayscale
@@ -114,7 +124,10 @@ def move_pngs(folder_to_photos):
 
 if __name__ == "__main__":
     # path to images
-    path_to_images = "/Users/ethan/Documents/GeoGuessrAI/south-korea"
+    width = int(input("Enter width: "))
+    height = int(input("Enter height: "))
+    path_to_images = "/Users/aidan/Documents/GeoGuessrAI/test"
+    path_to_resized_images = (f"/Users/aidan/Documents/GeoGuessrAI/test{width}x{height}")
     convert_png_to_jpg(path_to_images)
     t, p, j, np, nj = get_folder_size(path_to_images)
     print(f"Folder size: {t} GB")
@@ -124,3 +137,5 @@ if __name__ == "__main__":
     print(f"Total number of JPGs: {nj}")
     move_pngs(path_to_images)
     remove_black_images(path_to_images)
+    
+    resize(path_to_images,path_to_resized_images, height, width)     
