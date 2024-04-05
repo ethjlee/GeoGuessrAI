@@ -1,7 +1,27 @@
 from PIL import Image
 from tqdm import tqdm
 import os, shutil, sys
+"""
+IMPORTANT:
+After image capture, your directory set up should look like this.
 
+Your_parent_directory/
+│
+├── GeoGuessrAI/
+│   ├── image_capture.py
+│   ├── image_processing.py
+│   └── ...
+│
+├── YourCountryFolder1/
+│   ├── Image1.jpg
+│   ├── Image2.jpg
+│   └── ...
+│
+└── YourCountryFolder1_pngs/
+    ├── Image1.jpg
+    ├── Image2.jpg
+    └── ...
+"""
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
     image_names = [name for name in image_names if name.endswith(".png")]
@@ -13,10 +33,10 @@ def convert_png_to_jpg(path):
         rgb_image.save(os.path.join(path, new_name))
     
 def resize(folder_path, output_path, width, height):
-    source_folder = folder_path # ./GGAI/country
-    parent_folder = os.path.dirname(source_folder) # ./GGAI
-    separator = "/" if "/" in source_folder else "\\"
-    country = source_folder.split(separator)[-1] # /country
+    folder_path # ./GGAI/country
+    parent_folder = os.path.dirname(folder_path) # ./GGAI
+    separator = "/" if "/" in folder_path else "\\"
+    country = folder_path.split(separator)[-1] # /country
     folder_path = os.path.join(parent_folder, country)
     if not os.path.exists(output_path): 
         os.makedirs(output_path)
@@ -96,9 +116,9 @@ def get_folder_size(folder_path):
     
     return total_size_gb, png_size_gb, jpg_size_gb, num_pngs, num_jpgs
 
-def move_pngs(folder_to_photos):
+def move_pngs(source_folder):
     # Move pngs to a separate directory.
-    source_folder = folder_to_photos # ./GGAI/country
+    source_folder # ./GGAI/country
     parent_folder = os.path.dirname(source_folder) # ./GGAI
     separator = "/" if "/" in source_folder else "\\"
     country = source_folder.split(separator)[-1] # /country
@@ -123,22 +143,27 @@ def move_pngs(folder_to_photos):
     print(f"Moved {i} PNGs from {parent_folder} to {destination_folder}.")
 
 if __name__ == "__main__":
-    # path to images
-    username = "ethan" # change 
-    country = "andorra"
+    """Only need to change the country name. Then hit run."""
+    country = "testing"
 
+
+    username = os.getlogin()
     width = int(input("Enter width: "))
     height = int(input("Enter height: "))
     assert width == height, "Image dimensions are not square."
-    path_to_images = f"/Users/{username}/Documents/GeoGuessrAI/{country}"
-    path_to_resized_images = (f"/Users/{username}/Documents/GeoGuessrAI/{country}{width}x{height}")
+
+    path_to_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), country)
+    path_to_resized_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f"{country}{width}x{height}")
+
     convert_png_to_jpg(path_to_images)
     t, p, j, np, nj = get_folder_size(path_to_images)
+    
     print(f"Folder size: {t} GB")
     print(f"Total size of PNGs: {p} GB")
     print(f"Total size of JPGs: {j} GB")
     print(f"Total number of PNGs: {np}")
     print(f"Total number of JPGs: {nj}")
+    
     move_pngs(path_to_images)
     remove_black_images(path_to_images)
     

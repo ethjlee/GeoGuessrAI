@@ -282,15 +282,21 @@ def get_credentials(admin_name="", admin=False):
     return (username, password)
 
 if __name__ == "__main__":
-    # path to GG credentials is located in default "home folder/admin_name"
-    username, password = get_credentials(admin_name="ethan", admin=True)
+    """Only need to change country name below. Then hit run."""
+    
+    country = "colombia"
+
+    """Optionally, include an "admin.txt" in your home folder.
+    path to GG credentials is located in default home folder/admin_name"""
+    username, password = get_credentials(admin_name=os.getlogin(), admin=True)
     
     overnight = True
     batches = 40
     batch_size = 500
-    country = "south-korea"
+    
     # The parent GG path. Sub-dirs are automatically created for ea. country.
-    save_path = "/Users/ethan/Documents/GeoGuessrAI" 
+    save_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print(save_path)
 
     if overnight:
         while overnight:
