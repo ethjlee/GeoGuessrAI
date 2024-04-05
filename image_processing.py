@@ -125,9 +125,11 @@ def move_pngs(folder_to_photos):
 if __name__ == "__main__":
     # path to images
     username = "ethan" # change 
+    country = "andorra"
+
     width = int(input("Enter width: "))
     height = int(input("Enter height: "))
-    country = "south-korea"
+    assert width == height, "Image dimensions are not square."
     path_to_images = f"/Users/{username}/Documents/GeoGuessrAI/{country}"
     path_to_resized_images = (f"/Users/{username}/Documents/GeoGuessrAI/{country}{width}x{height}")
     convert_png_to_jpg(path_to_images)
