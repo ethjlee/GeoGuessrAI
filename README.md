@@ -1,5 +1,5 @@
 # GeoGuessrAI
-## Collaborators on this project: Ethan Lee, Aidan Sunahara, Brian Loewe
+## Collaborators on this project: Ethan Lee, Aidan Sunahara
 
 Implement machine learning algorithm to classify various Google Street View images from around the world.
 
@@ -8,6 +8,7 @@ Implement machine learning algorithm to classify various Google Street View imag
 - Taiwan
 - South Korea
 - Malta
+- Colombia
 
 ## Progress
 ### Data Acquisition
