@@ -235,21 +235,10 @@ class Browser():
         time.sleep(2) # Ensure picture load
         # Save screenshot
         timestamp = datetime.now().strftime("%m.%d.%Y_%H%M%S")
-        if "/" in self.save_path: # mac/linux
-            screenshot_path = f"{self.save_path}/{country}"
-            
-            
-            if not os.path.exists(screenshot_path):
-                os.makedirs(screenshot_path)
-            screenshot_path = f"{screenshot_path}/{timestamp}_{country}.png"
-            self.driver.save_screenshot(screenshot_path)
-        elif "\\" in self.save_path: # windows
-            screenshot_path = f"{self.save_path}\\{country}"
-            if not os.path.exists(screenshot_path):
-                os.makedirs(screenshot_path)
-            screenshot_path = f"{screenshot_path}\\{timestamp}_{country}.png"
-            print(self.driver.save_screenshot(screenshot_path))
-
+        screenshot_path = os.path.join(self.save_path, country)
+        if not os.path.exists(screenshot_path):
+            os.makedirs(screenshot_path)
+        self.driver.save_screenshot(os.path.join(screenshot_path, f"{timestamp}_{country}.png"))
         self.restore_element("game_guessMap__MTlQ_") # Restore map visibility for the next round.
         # Click map.
         map_xpath = "/html/body/div[1]/div[2]/div[2]/main/div/div/div[4]/div/div[3]/div/div/div/div[3]/div[1]/div[2]"
@@ -273,7 +262,7 @@ Otherwise, enter directly into the terminal.
 Returns:
 username, password (tuple, str)
 """
-def get_credentials(os, admin_name="", admin=False):
+def get_credentials(admin_name="", admin=False):
     username = ""
     password = ""
     path = ""
@@ -281,14 +270,7 @@ def get_credentials(os, admin_name="", admin=False):
     
     # I know it's bad...but please store user/pw in plain text, each on separate line
     if admin:
-        if os.lower() == "mac":
-            path = f"/Users/{admin_name}/admin.txt"
-        elif os.lower() == "windows":
-            path = f"C:\\Users\\{admin_name}\\admin.txt"
-            # Implement with windows
-        else:
-            print("dirty linux abusers are not allowed")
-            return
+        path = os.path.join("/Users", admin_name, "admin.txt")
         with open(path) as f:
             lines = f.read().splitlines()
             username = lines[0]
@@ -301,7 +283,7 @@ def get_credentials(os, admin_name="", admin=False):
 
 if __name__ == "__main__":
     # path to GG credentials is located in default "home folder/admin_name"
-    username, password = get_credentials(os="Mac", admin_name="ethan", admin=True)
+    username, password = get_credentials(admin_name="ethan", admin=True)
     
     overnight = True
     batches = 40

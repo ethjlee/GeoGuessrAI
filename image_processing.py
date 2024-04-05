@@ -4,25 +4,25 @@ import os, shutil, sys
 
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
-    image_names = [name for name in image_names if ".png" in name]
+    image_names = [name for name in image_names if name.endswith(".png")]
     for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress"):
         name = image_names[i]
-        separator = "/" if "/" in path else "\\"                
-        image = Image.open(f"{path}{separator}{name}")
+        image = Image.open(os.path.join(path, name))
         rgb_image = image.convert('RGB')
-        rgb_image.save(path+separator+name.split(".png")[0]+".jpg")
+        new_name = name.split(".png")[0] + ".jpg"
+        rgb_image.save(os.path.join(path, new_name))
     
 def resize(folder_path, output_path, width, height):
     source_folder = folder_path # ./GGAI/country
     parent_folder = os.path.dirname(source_folder) # ./GGAI
     separator = "/" if "/" in source_folder else "\\"
     country = source_folder.split(separator)[-1] # /country
-    folder_path = os.path.join(parent_folder, f"{country}_pngs")
+    folder_path = os.path.join(parent_folder, country)
     if not os.path.exists(output_path): 
         os.makedirs(output_path)
     
     
-    for filename in os.listdir(folder_path):
+    for filename in tqdm(os.listdir(folder_path), desc="Resizing images", unit="pics"):
         if filename.endswith(".jpg") or filename.endswith(".png"):
             input_path = os.path.join(folder_path, filename)
             image = Image.open(input_path)
@@ -124,10 +124,12 @@ def move_pngs(folder_to_photos):
 
 if __name__ == "__main__":
     # path to images
+    username = "ethan" # change 
     width = int(input("Enter width: "))
     height = int(input("Enter height: "))
-    path_to_images = "/Users/aidan/Documents/GeoGuessrAI/test"
-    path_to_resized_images = (f"/Users/aidan/Documents/GeoGuessrAI/test{width}x{height}")
+    country = "south-korea"
+    path_to_images = f"/Users/{username}/Documents/GeoGuessrAI/{country}"
+    path_to_resized_images = (f"/Users/{username}/Documents/GeoGuessrAI/{country}{width}x{height}")
     convert_png_to_jpg(path_to_images)
     t, p, j, np, nj = get_folder_size(path_to_images)
     print(f"Folder size: {t} GB")
