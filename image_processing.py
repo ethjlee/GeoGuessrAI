@@ -1,6 +1,8 @@
 from PIL import Image
 from tqdm import tqdm
 import os, shutil, sys, getpass
+from concurrent.futures import ThreadPoolExecutor
+import multiprocessing
 """
 IMPORTANT:
 After image capture, your directory set up should look like this.
@@ -25,13 +27,14 @@ Your_parent_directory/
 def convert_png_to_jpg(path):
     image_names = os.listdir(path)
     image_names = [name for name in image_names if name.endswith(".png")]
-    for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress"):
-        name = image_names[i]
+    def convert_image(name):
         image = Image.open(os.path.join(path, name))
         rgb_image = image.convert('RGB')
         new_name = name.split(".png")[0] + ".jpg"
         rgb_image.save(os.path.join(path, new_name))
-    
+    with ThreadPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
+        list(tqdm(executor.map(convert_image, image_names), total=len(image_names), desc="PNG to JPG conversion progress", unit="pics"))
+
 def resize(folder_path, output_path, width, height):
     folder_path # ./GGAI/country
     parent_folder = os.path.dirname(folder_path) # ./GGAI
@@ -41,9 +44,8 @@ def resize(folder_path, output_path, width, height):
     if not os.path.exists(output_path): 
         os.makedirs(output_path)
     
-    
-    for filename in tqdm(os.listdir(folder_path), desc="Resizing images", unit="pics"):
-        if filename.endswith(".jpg") or filename.endswith(".png"):
+    def resize_image(filename):
+        if filename.endswith(".jpg"):
             input_path = os.path.join(folder_path, filename)
             image = Image.open(input_path)
             
@@ -60,7 +62,8 @@ def resize(folder_path, output_path, width, height):
             cropped_image = image.crop((left, top, right, bottom))
             output_file_path = os.path.join(output_path, filename)
             cropped_image.save(output_file_path)
-
+    with ThreadPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
+        list(tqdm(executor.map(resize_image, os.listdir(folder_path)), total=len(os.listdir(folder_path)), desc="Resizing images", unit="pics"))
 
 def is_black(image_path, threshold=10):
     with Image.open(image_path) as img:
@@ -74,12 +77,15 @@ def is_black(image_path, threshold=10):
 def remove_black_images(folder_path):
     i = 0
     directory = [i for i in os.listdir(folder_path) if ".jpg" in i]
-    for filename in tqdm(directory, desc="Removing bad images", unit="pics"):
+    def remove_image(filename):
+        nonlocal i
         image_path = os.path.join(folder_path, filename)
         if is_black(image_path):
             os.remove(image_path)
             print(f"Removed black image: {filename}")
             i += 1
+    with ThreadPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
+        list(tqdm(executor.map(remove_image, directory), total=len(directory), desc="Removing bad images", unit="pics"))
     print(f"Removed {i} bad images.")
 
 def get_folder_size(folder_path):
@@ -144,7 +150,7 @@ def move_pngs(source_folder):
 
 if __name__ == "__main__":
     """Only need to change the country name. Then hit run."""
-    countries = ["testing", "andorra", "taiwan", "south-korea", "colombia"]
+    countries = ["testing"]
 
 
     username = getpass.getuser()
@@ -156,6 +162,7 @@ if __name__ == "__main__":
         path_to_resized_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f"{country}{width}x{height}")
 
         convert_png_to_jpg(path_to_images)
+        
         t, p, j, np, nj = get_folder_size(path_to_images)
         
         print(f"Folder size: {t} GB")
