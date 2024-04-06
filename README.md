@@ -22,7 +22,7 @@ Implement machine learning algorithm to classify various Google Street View imag
 
 ### Model Training
 - [x] Remove bad images
-- [ ] Resize images
+- [x] Resize images
 - [ ] Final data pre-procesing
 - [ ] Model creation
 - [ ] Train/test
