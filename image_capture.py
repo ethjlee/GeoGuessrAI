@@ -288,7 +288,7 @@ if __name__ == "__main__":
 
     """Optionally, include an "admin.txt" in your home folder.
     path to GG credentials is located in default home folder/admin_name"""
-    username, password = get_credentials(admin_name=os.getlogin(), admin=True)
+    username, password = get_credentials(admin_name=getpass.getuser(), admin=True)
     
     overnight = True
     batches = 40

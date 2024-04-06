@@ -1,6 +1,6 @@
 from PIL import Image
 from tqdm import tqdm
-import os, shutil, sys
+import os, shutil, sys, getpass
 """
 IMPORTANT:
 After image capture, your directory set up should look like this.
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     country = "testing"
 
 
-    username = os.getlogin()
+    username = getpass.getuser()
     width = int(input("Enter width: "))
     height = int(input("Enter height: "))
     assert width == height, "Image dimensions are not square."
