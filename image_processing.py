@@ -144,27 +144,27 @@ def move_pngs(source_folder):
 
 if __name__ == "__main__":
     """Only need to change the country name. Then hit run."""
-    country = "testing"
+    countries = ["testing", "andorra", "taiwan", "south-korea", "colombia"]
 
 
     username = getpass.getuser()
     width = int(input("Enter width: "))
     height = int(input("Enter height: "))
     assert width == height, "Image dimensions are not square."
+    for country in countries:
+        path_to_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), country)
+        path_to_resized_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f"{country}{width}x{height}")
 
-    path_to_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), country)
-    path_to_resized_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f"{country}{width}x{height}")
-
-    convert_png_to_jpg(path_to_images)
-    t, p, j, np, nj = get_folder_size(path_to_images)
-    
-    print(f"Folder size: {t} GB")
-    print(f"Total size of PNGs: {p} GB")
-    print(f"Total size of JPGs: {j} GB")
-    print(f"Total number of PNGs: {np}")
-    print(f"Total number of JPGs: {nj}")
-    
-    move_pngs(path_to_images)
-    remove_black_images(path_to_images)
-    
-    resize(path_to_images,path_to_resized_images, height, width)     
+        convert_png_to_jpg(path_to_images)
+        t, p, j, np, nj = get_folder_size(path_to_images)
+        
+        print(f"Folder size: {t} GB")
+        print(f"Total size of PNGs: {p} GB")
+        print(f"Total size of JPGs: {j} GB")
+        print(f"Total number of PNGs: {np}")
+        print(f"Total number of JPGs: {nj}")
+        
+        move_pngs(path_to_images)
+        remove_black_images(path_to_images)
+        
+        resize(path_to_images,path_to_resized_images, height, width)     
