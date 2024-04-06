@@ -1,7 +1,6 @@
 from PIL import Image
 from tqdm import tqdm
 import os, shutil, sys, getpass
-import asyncio, tracemalloc
 """
 IMPORTANT:
 After image capture, your directory set up should look like this.
@@ -24,10 +23,9 @@ Your_parent_directory/
     └── ...
 """
 def convert_png_to_jpg(path):
-    country = os.path.split(path)[-1]
     image_names = os.listdir(path)
     image_names = [name for name in image_names if name.endswith(".png")]
-    for i in tqdm(range(len(image_names)), desc=f"({country}) PNG to JPG conversion progress"):
+    for i in tqdm(range(len(image_names)), desc="PNG to JPG conversion progress"):
         name = image_names[i]
         image = Image.open(os.path.join(path, name))
         rgb_image = image.convert('RGB')
@@ -44,7 +42,7 @@ def resize(folder_path, output_path, width, height):
         os.makedirs(output_path)
     
     
-    for filename in tqdm(os.listdir(folder_path), desc=f"({country}) Resizing images", unit="pics"):
+    for filename in tqdm(os.listdir(folder_path), desc="Resizing images", unit="pics"):
         if filename.endswith(".jpg") or filename.endswith(".png"):
             input_path = os.path.join(folder_path, filename)
             image = Image.open(input_path)
@@ -75,9 +73,8 @@ def is_black(image_path, threshold=10):
 
 def remove_black_images(folder_path):
     i = 0
-    country = os.path.split(folder_path)[-1]
     directory = [i for i in os.listdir(folder_path) if ".jpg" in i]
-    for filename in tqdm(directory, desc=f"({country}) Removing bad images", unit="pics"):
+    for filename in tqdm(directory, desc="Removing bad images", unit="pics"):
         image_path = os.path.join(folder_path, filename)
         if is_black(image_path):
             os.remove(image_path)
@@ -127,9 +124,9 @@ def move_pngs(source_folder):
     country = source_folder.split(separator)[-1] # /country
     
     # Assign source -> destination folders
-    #print("From:", source_folder)
+    print("From:", source_folder)
     destination_folder = os.path.join(parent_folder, f"{country}_pngs")
-    #print("To:", destination_folder)
+    print("To:", destination_folder)
 
     if not os.path.exists(destination_folder):
         os.makedirs(destination_folder)
@@ -137,39 +134,37 @@ def move_pngs(source_folder):
     i = 0
     for root, _, files in os.walk(source_folder):
         files = [f for f in files if f.endswith(".png")]
-        if len(files) > 0:
-            for file in tqdm(files, desc=f"({country}) Moving PNGs out", unit="pngs"):
-                source_file_path = os.path.join(root, file)
-                destination_file_path = os.path.join(destination_folder, file)
-                os.makedirs(destination_folder, exist_ok=True)
-                shutil.move(source_file_path, destination_file_path)
-                i += 1
-    print(f"Moved {i} PNGs from {source_folder} to {destination_folder}.")
-
-async def process_images(w_and_h, country):
-    path_to_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), country)
-    path_to_resized_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f"{country}{w_and_h}x{w_and_h}")
-
-    await asyncio.to_thread(convert_png_to_jpg, path_to_images)
-    t, p, j, np, nj = await asyncio.to_thread(get_folder_size, path_to_images)
-    
-    print(f"\n{country} Folder size: {t} GB\n{country} Total size of PNGs: {p} GB\n{country} Total size of JPGs: {j} GB\n{country} Number of PNGs: {np}\n{country} Number of JPGs: {nj}\n")
-    
-    await asyncio.to_thread(move_pngs, path_to_images)
-    await asyncio.to_thread(remove_black_images, path_to_images)
-    
-    await asyncio.to_thread(resize, path_to_images, path_to_resized_images, w_and_h, w_and_h)     
-
-async def main(w_and_h, countries_list):
-    await asyncio.gather(*(process_images(w_and_h, country) for country in countries_list))
+        for file in tqdm(files, desc="Moving PNGs out", unit="pngs"):
+            source_file_path = os.path.join(root, file)
+            destination_file_path = os.path.join(destination_folder, file)
+            os.makedirs(destination_folder, exist_ok=True)
+            shutil.move(source_file_path, destination_file_path)
+            i += 1
+    print(f"Moved {i} PNGs from {parent_folder} to {destination_folder}.")
 
 if __name__ == "__main__":
-
     """Only need to change the country name. Then hit run."""
-    countries_list = ["andorra", "south-korea", "colombia", "testing", "taiwan"]
+    country = "testing"
 
 
-    tracemalloc.start()
-    w_and_h = int(input("Enter width and height: "))
+    username = getpass.getuser()
+    width = int(input("Enter width: "))
+    height = int(input("Enter height: "))
+    assert width == height, "Image dimensions are not square."
+
+    path_to_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), country)
+    path_to_resized_images = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), f"{country}{width}x{height}")
+
+    convert_png_to_jpg(path_to_images)
+    t, p, j, np, nj = get_folder_size(path_to_images)
     
-    asyncio.run(main(w_and_h, countries_list))
+    print(f"Folder size: {t} GB")
+    print(f"Total size of PNGs: {p} GB")
+    print(f"Total size of JPGs: {j} GB")
+    print(f"Total number of PNGs: {np}")
+    print(f"Total number of JPGs: {nj}")
+    
+    move_pngs(path_to_images)
+    remove_black_images(path_to_images)
+    
+    resize(path_to_images,path_to_resized_images, height, width)     
