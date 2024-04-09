@@ -8,12 +8,11 @@ def main(countries_list):
     i = 0
     for root, dirs, files in os.walk(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"), topdown=False):
         for folder in dirs:
-            
             if folder in countries_list:
-                f = os.path.join(root, folder)
-                imgs = [im for im in os.listdir(f) if im.endswith(".jpg")] # python list
-                cl += [i] * len(imgs)
-                names += imgs
+                for dirpath, _, filenames in os.walk(os.path.join(root, folder)):
+                    img_paths = [os.path.join(root, folder, name) for name in filenames] # python list
+                    names += img_paths
+                    cl += [i] * len(img_paths)
                 i += 1
     
     df["images"] = names
