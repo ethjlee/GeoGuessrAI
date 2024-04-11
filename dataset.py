@@ -10,7 +10,7 @@ def main(countries_list):
         for folder in dirs:
             if folder in countries_list:
                 for dirpath, _, filenames in os.walk(os.path.join(root, folder)):
-                    img_paths = [os.path.join(root, folder, name) for name in filenames] # python list
+                    img_paths = [os.path.join(root, folder, name) for name in filenames if name.endswith(".jpg")] # python list
                     names += img_paths
                     cl += [i] * len(img_paths)
                 i += 1
