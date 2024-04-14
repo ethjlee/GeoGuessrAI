@@ -21,7 +21,7 @@ def main(countries_list):
     return df
 if __name__ == "__main__":
     dim = 224
-    countries = ["andorra", "taiwan", "south-korea", "malta"] # taiwan may not be a "country"!!!
+    countries = ["taiwan", "andorra"] # taiwan may not be a "country"!!!
     for i in range(len(countries)):
         countries[i] = f"{countries[i]}{dim}x{dim}"
     
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     
     current_directory = os.getcwd()
     parent_directory = os.path.dirname(current_directory)
-    file_path = os.path.join(parent_directory, "output.csv")
+    file_path = os.path.join(parent_directory, f"output_{dim}.csv")
     # Save the DataFrame to a CSV file
     df.to_csv(file_path, index=False)  # Set index=False to exclude the index from the CSV file
 
