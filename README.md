@@ -23,6 +23,12 @@ Implement machine learning algorithm to classify various Google Street View imag
 ### Model Training
 - [x] Remove bad images
 - [x] Resize images
-- [ ] Final data pre-procesing
-- [ ] Model creation
-- [ ] Train/test
+- [x] Final data pre-procesing
+- [x] Model creation
+- [x] Train/test
+
+### Optimization
+- [ ] Optimize and expand neural network to learn complicated trends.
+- [ ] Add larger countries.
+- [ ] Expand model.
+- [ ] Implement transformer.
